@@ -48,7 +48,19 @@ function setup()
     player:load(module)
     player:play()
 
+
     setup_is_done = true    
+end
+
+function drawProgBar( x, y, w, h, pcnt )
+    gfx.drawRect( x,y,w,h )
+    gfx.fillRect( x+2, y+2, (w-4) * pcnt, h-4 )
+end
+function drawLineBar( x, y, w, h, pcnt )
+    gfx.drawRect( x,y,w,h )
+
+    local xp = (w-4) * pcnt
+    gfx.fillRect( xp - 2, y+2, 4, h-4 )
 end
 
 function playdate.update()
@@ -56,8 +68,27 @@ function playdate.update()
         setup()
     end
 
-    gfx.fillRect(0, 0, 400, 240)
+    local pos, len, pos_pattern, position,
+        c0f, c1f, c2f, c3f = player.get( )
+    if len == 0 then len = 1 end
+
+    --print( pos, len, pos_pattern, position, c0f, c1f, c2f, c3f)
+
+    --gfx.fillRect(0, 0, 400, 240)
+    gfx.clear( gfx.kColorWhite )
     playdate.drawFPS(0,0)
+
+    -- pattern position
+    drawProgBar( 5, 30, 390, 20, (pos_pattern/64) )
+
+    -- song position
+    drawProgBar( 5, 55, 390, 20, (pos/len) )
+
+    -- some note things?
+    drawLineBar( 5, 100, 390, 21, (c0f/1024) )
+    drawLineBar( 5, 120, 390, 21, (c1f/1024) )
+    drawLineBar( 5, 140, 390, 21, (c2f/1024) )
+    drawLineBar( 5, 160, 390, 21, (c3f/1024) )
 
     player:update()
 end

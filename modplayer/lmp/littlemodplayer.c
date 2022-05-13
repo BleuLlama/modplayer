@@ -62,6 +62,8 @@
 #define MPDBG(l, x...)	       	do { } while(0)
 #endif
 
+extern mps_t * global_mps;
+extern int* pl_vals;
 
 ////////////////////////////////////////////////////////////////////////////////
 /* Utilities */
@@ -102,6 +104,8 @@ static uint32_t 	lmp_pi_from_pitch(uint16_t pitch)
 
 int 	lmp_init(mps_t *mps, uint8_t *mod_base)
 {
+	global_mps = mps;
+
 	int tss = 0;
 	/* FIXME: detect 15 vs 31-sample format */
 	mps->mod_data = mod_base;
@@ -335,6 +339,7 @@ static int lmp_tick(mps_t *mps)
 	/* OK, process the event at current_pattern[pos_pattern].  */
 
 	MPDBG(2, "%02d(%02d):%02d ", mps->pos, current_pattern, mps->pos_pattern);
+	pl_vals[0] = current_pattern;
 
 	mps->pos_pattern++;
 
@@ -350,13 +355,15 @@ static int lmp_tick(mps_t *mps)
 		/* FIXME: This masking is a bit gross, as it was written for LE
 		 * then bodged for BE...  Could be cleaned up!
 		 */
-                uint32_t note = host_to_LE32(current_frame[chan]);
+        uint32_t note = host_to_LE32(current_frame[chan]);
 		uint8_t val = note >> 24;
 		uint8_t inst = ((note >> 20) & 0xf) | (note & 0x10);
 		uint16_t freq = ((note << 8) & 0xf00) | ((note >> 8) & 0xff);
 		uint8_t command = (note >> 16) & 0xf;
 
 		MPDBG(3, "  %04d %02d %x%02x", freq, inst, command, val);
+		if( freq > 0 ){  pl_vals[ 1 + chan ] = freq; }
+		pl_vals[ 5 + chan ] = inst;
 
 		/* Reset inter-note effects: */
 		mps->cs[chan].effect = 0xff;

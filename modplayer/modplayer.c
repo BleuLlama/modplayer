@@ -342,6 +342,59 @@ int playerUpdate(lua_State* state)
     return 0;
 }
 
+
+mps_t * global_mps = NULL;
+int p[] = { 1,  2,  3,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+int * pl_vals = p;
+
+
+int playerGet(lua_State* state)
+{
+    int argc = pd->lua->getArgCount(); // get( 1, 2 ) => argc=2
+    int v = 0;
+    
+    v = pd->lua->getArgInt( 1 ); // passed in value (or 0)
+
+
+    if( global_mps == NULL ) {
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+        pd->lua->pushInt( 0 );
+        
+    } else {
+        pd->lua->pushInt( global_mps->pos );
+        pd->lua->pushInt( global_mps->length );
+        
+        pd->lua->pushInt( global_mps->pos_pattern );   // pos within the pattern
+        pd->lua->pushInt( pl_vals[0] ) ; // current_pattern
+
+        pd->lua->pushInt( pl_vals[1] ) ; // voice 0 - freq
+        pd->lua->pushInt( pl_vals[2] ) ; // voice 1 - freq
+        pd->lua->pushInt( pl_vals[3] ) ; // voice 2 - freq
+        pd->lua->pushInt( pl_vals[4] ) ; // voice 3 - freq
+        /*
+        pd->lua->pushInt( pl_vals[5] ) ; // voice 0 - inst
+        pd->lua->pushInt( pl_vals[6] ) ; // voice 1 - inst
+        pd->lua->pushInt( pl_vals[7] ) ; // voice 2 - inst
+        pd->lua->pushInt( pl_vals[8] ) ; // voice 3 - inst
+
+        // sample positions
+        pd->lua->pushInt( global_mps->cs[0].pos ); // voice 0 - playback pos
+        pd->lua->pushInt( global_mps->cs[1].pos );// voice 0 - playback pos
+        pd->lua->pushInt( global_mps->cs[2].pos );// voice 0 - playback pos
+        pd->lua->pushInt( global_mps->cs[3].pos );// voice 0 - playback pos
+        */
+    }
+    
+	return 8;
+}
+
 static const lua_reg player_class[] = {
     { "new", playerNew },
     { "__gc", playerDelete },
@@ -349,6 +402,7 @@ static const lua_reg player_class[] = {
     { "play", playerPlay },
     { "stop", playerStop },
     { "update", playerUpdate },
+    { "get", playerGet },
     { NULL, NULL }
 };
 

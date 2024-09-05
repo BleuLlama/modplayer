@@ -84,5 +84,8 @@ clean:
 compile: Source/main.lua
 	"$(SDKBIN)/pdc" 'Source' '$(GAME).pdx'
 	
+
 open:
 	open -a '$(SDKBIN)/$(SIM).app/Contents/MacOS/$(SIM)' '$(GAME).pdx'
+
+test: open 

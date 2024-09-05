@@ -128,7 +128,8 @@ int moduleNew(lua_State* state)
     module->sample = pd->sound->sample->newSampleFromData((uint8_t *)module->sample_buffer,
                                                           kSound16bitStereo,
                                                           44100,
-                                                          MODULE_BUFFER_SIZE_IN_SAMPLES * sizeof(int16_t) * 2);
+                                                          MODULE_BUFFER_SIZE_IN_SAMPLES * sizeof(int16_t) * 2,
+                                                          1);
     if (module->sample == NULL) {
         PD_LOG("Error creating sample.");
         PD_FREE(module);
